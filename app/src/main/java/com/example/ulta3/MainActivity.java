@@ -1,6 +1,6 @@
 package com.example.ulta3;
 
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentTransaction;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -9,6 +9,7 @@ import android.speech.RecognizerIntent;
 import android.support.constraint.Constraints;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.ulta3.model.Product;
 import com.example.ulta3.BuildConfig;
+import com.example.ulta3.ui.products.ProductsFragment;
 import com.opencsv.CSVReader;
 
 import org.w3c.dom.Text;
@@ -164,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
         super.onActivityResult(requestCode, resultCode, data);
+        Fragment fragment = new ProductsFragment();
 
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.replace(R.id.fragment_home, fragment);
+        transaction.commit();
     }
 }
