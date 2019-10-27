@@ -10,14 +10,22 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:padding="20dp"
+        android:background="@drawable/border_top"
     >
-        <TextView
-            android:id="@+id/productName"
+        <RelativeLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            style="@style/primaryFont"
-            android:text="Testing"
-        />
+            >
+            <TextView
+                android:id="@+id/productName"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                style="@style/primaryFont"
+                android:textStyle="normal"
+                android:text="Testing"
+                />
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/productPrice"
             android:layout_width="match_parent"
@@ -25,7 +33,6 @@
             style="@style/hintBodyFont"
             android:text="testing again."
             android:layout_marginTop="20dp"
-            android:layout_below="@id/productName"
             />
 
     </LinearLayout>
