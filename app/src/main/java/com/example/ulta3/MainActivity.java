@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(vm.getCategoryBySKU(nonzeroSortedSKUs.get(i)), vm.getProb(nonzeroSortedSKUs.get(i)) + ": " + vm.getNameBySKU(nonzeroSortedSKUs.get(i)) + ", " + vm.getShortDescBySKU(nonzeroSortedSKUs.get(i)));
 
                 List<Integer> storesInStock = vm.getStoresInStock(nonzeroSortedSKUs.get(i));
-                if (storesInStock.size() == 0) Log.d("Store in stock", "Out of stock near you");
+                if (storesInStock.size() == 0) Log.d("Store in stock", "In stock online");
                 for (int storeInStock : storesInStock){
                     for (Store s : stores){
                         if (s.getID() == storeInStock) Log.d(Integer.toString(storeInStock), s.getDistance() + " miles away");
@@ -353,13 +353,20 @@ public class MainActivity extends AppCompatActivity {
                 if (i == 10) break;
             }
 
-            productResults.addAll(nonzeroSortedSKUs);
+            for (int i=0;i<10;i++){
+                try{
+                    productResults.add(nonzeroSortedSKUs.get(i));
+                } catch (IndexOutOfBoundsException e){ break;}
+            }
+
+//            productResults.addAll(nonzeroSortedSKUs);
         }
         super.onActivityResult(requestCode, resultCode, data);
         Fragment fragment = new ProductsFragment();
 
         Bundle args = new Bundle();
         args.putIntegerArrayList("ProductResults", productResults);
+        fragment.setArguments(args);
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
@@ -375,5 +382,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.replace(R.id.container, fragment);
         transaction.commit();
+    }
+
+    public ArrayList<Store> getStores(){
+        return stores;
     }
 }

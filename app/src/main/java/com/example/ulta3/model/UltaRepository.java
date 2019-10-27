@@ -96,7 +96,17 @@ public class UltaRepository {
         String s = "% man %";
         String s2 = "% men %";
         String s3 = "% male %";
-        executor.execute(()-> roomDao.setNonManProductsToZero(s, s2, s3));
+        Thread thread = new Thread() {
+            public void run() {
+                roomDao.setNonManProductsToZero(s, s2, s3);
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
     private List<Integer> a4 = new ArrayList<>();

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.example.ulta3.MainActivity;
 import com.example.ulta3.R;
 import com.example.ulta3.ViewModel;
 import com.example.ulta3.model.Product;
+import com.example.ulta3.model.Store;
 
 import java.util.List;
 
@@ -20,10 +22,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
     class ProductAdapterViewHolder extends RecyclerView.ViewHolder{
         private final TextView productName;
         private final TextView productPrice;
+        private final TextView productDistance;
         private ProductAdapterViewHolder(View itemView) {
             super(itemView);
             productName = itemView.findViewById(R.id.productName);
             productPrice = itemView.findViewById(R.id.productPrice);
+            productDistance = itemView.findViewById(R.id.productDistance);
         }
     }
 
@@ -53,6 +57,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
         holder.productName.setText(productName);
         holder.productPrice.setText("$"+Double.toString(price));
 
+        List<Integer> storesInStock = vm.getStoresInStock(products.get(position));
+        if (storesInStock.size() == 0) holder.productDistance.setText("In stock online.");
+        else {
+            holder.productDistance.setText("");
+            for (int storeInStock : storesInStock){
+                for (Store s : (((MainActivity) context).getStores())){
+                    if (s.getID() == storeInStock){
+                        holder.productDistance.append(s.getAddress() + ": " + (double)s.getDistance()/100 + " miles away.\n");
+                    }
+                }
+            }
+        }
     }
 
     @Override

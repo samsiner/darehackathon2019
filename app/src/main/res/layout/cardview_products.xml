@@ -31,9 +31,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/hintBodyFont"
-            android:text="testing again."
+            android:text="Stores near you:\n"
             android:layout_marginTop="20dp"
             />
+
+        <TextView
+            android:id="@+id/productDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/hintBodyFont"
+            android:text=""
+            android:layout_marginTop="20dp"
+            />
+
 
     </LinearLayout>
 
