@@ -23,6 +23,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.ulta3.model.Product;
 import com.example.ulta3.BuildConfig;
+import com.example.ulta3.ui.home.HomeFragment;
 import com.example.ulta3.ui.products.ProductsFragment;
 import com.opencsv.CSVReader;
 
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
+        ArrayList<Integer> productResults = null;
         if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
@@ -158,19 +160,27 @@ public class MainActivity extends AppCompatActivity {
             }
 
             List<Integer> nonzeroSortedSKUs = vm.getProbNonzeroSorted();
-
-            for (int i=0; i<nonzeroSortedSKUs.size();i++){
-                Log.d(vm.getCategoryBySKU(nonzeroSortedSKUs.get(i)), vm.getProb(nonzeroSortedSKUs.get(i)) + ": " + vm.getNameBySKU(nonzeroSortedSKUs.get(i)) + ", " + vm.getShortDescBySKU(nonzeroSortedSKUs.get(i)));
-                if (i == 10) break;
-            }
-
+            productResults.addAll(nonzeroSortedSKUs);
         }
         super.onActivityResult(requestCode, resultCode, data);
         Fragment fragment = new ProductsFragment();
 
+        Bundle args = new Bundle();
+        args.putIntegerArrayList("ProductResults", productResults);
+
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        transaction.replace(R.id.fragment_home, fragment);
+        transaction.replace(R.id.container, fragment);
+        transaction.commit();
+    }
+
+    public ViewModel getViewModel(){ return vm; }
+
+    public void goToHomeFragment(View v){
+        Fragment fragment = new HomeFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.replace(R.id.container, fragment);
         transaction.commit();
     }
 }

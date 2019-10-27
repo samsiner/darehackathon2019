@@ -5,6 +5,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="home_tagline">Tell us what problem you\'re trying to solve.</string>
     <string name="hint_title">Say something like...</string>
-    <string name="hint_body">"I need new cologne.\"\n\"Show expensive beard products.\"\n\"Nearest House 99 by David Beckham face wash.\"</string>
+    <string name="hint_body">\"I need new cologne.\"\n\"Show expensive beard products.\"\n\"Nearest House 99 by David Beckham face wash.\"</string>
     <string name="content_description_mic_icon">Mic Icon</string>
 </resources>
