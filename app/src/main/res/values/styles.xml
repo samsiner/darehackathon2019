@@ -11,7 +11,35 @@
     <!-- Splash Screen -->
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
 
+    <!-- Mic Button -->
+    <style name="micButton">
+        <item name="android:layout_width">350dp</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+
+    <style name="micIcon">
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_width">24dp</item>
+    </style>
+
+    <!-- Font Styles -->
+    <style name="primaryFont">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="hintTitleFont">
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="hintBodyFont">
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingExtra">8dp</item>
     </style>
 
 

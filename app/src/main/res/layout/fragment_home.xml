@@ -1,24 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="50dp"
+    android:paddingBottom="50dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/text_home"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:text="@string/home_tagline"
+        style="@style/primaryFont"
         android:textAlignment="center"
-        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <Button
+
+    <TextView
+        android:id="@+id/text_home_hint_title"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/hint_title"
+        style="@style/hintTitleFont"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/text_home_hint_body"
+        android:layout_marginBottom="20dp"
+        />
+
+
+    <TextView
+        android:id="@+id/text_home_hint_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hint_body"
+        android:lines="3"
+        style="@style/hintBodyFont"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/rl_micButton"
+        android:layout_marginBottom="30dp"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rl_micButton"
+        style="@style/micButton"
+        android:background="@drawable/border_outline_gray"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:onClick="displaySpeechRecognizer"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="displaySpeechRecognizer"
+        >
+        <ImageView
+            android:src="@drawable/mic_icon_gray"
+            style="@style/micIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/content_description_mic_icon"/>
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
