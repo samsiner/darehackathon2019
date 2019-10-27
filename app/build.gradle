@@ -10,6 +10,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField('String', 'API_KEY', DareHackathonApp_ApiKey)
+        resValue("string", "api_key", DareHackathonApp_ApiKey)
     }
     buildTypes {
         release {

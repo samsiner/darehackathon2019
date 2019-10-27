@@ -19,6 +19,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.ulta3.model.Product;
+import com.example.ulta3.BuildConfig;
 import com.opencsv.CSVReader;
 
 import org.w3c.dom.Text;
@@ -43,10 +44,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-
-//    public ArrayList<HashMap<String, String>> maps = new ArrayList<>();
-//    public int prob1, prob2, prob3;
-
     ViewModel vm;
 
     @Override
@@ -66,13 +63,15 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        buildDatabase();
+        Log.d("Api", BuildConfig.API_KEY);
 
-        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
-        HashMap<String, String> newmap = new HashMap<>();
-        for (int i : al){
-            newmap.put(vm.getNameBySKU(i), "");
-        }
+//        buildDatabase();
+//
+//        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
+//        HashMap<String, String> newmap = new HashMap<>();
+//        for (int i : al){
+//            newmap.put(vm.getNameBySKU(i), "");
+//        }
     }
 
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -141,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
             vm.resetProb();
 
             for (String s : textarr){
-                Log.d("String", s);
-                if (s.length() < 3) continue;
+                ArrayList<String> commonWords = new ArrayList<>(Arrays.asList("all", "any", "how", "mad", "new", "now", "old", "well", "and", "but", "nor", "yet", "the", "our", "you", "who", "are", "has", "have", "get", "was", "show", "let", "can"));
+                if (commonWords.contains(s) || s.length() < 3) continue;
                 List<Integer> skusName = vm.getSearchName(s);
                 List<Integer> skusCategory = vm.getSearchCategory(s);
                 List<Integer> skusDesc = vm.getSearchDesc(s);
@@ -166,55 +165,4 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-
-
-
-//
-//    private void doTextStuff(String spokenText){
-//        prob1 = 0;
-//        prob2 = 0;
-//        prob3 = 0;
-//
-//        String[] words = spokenText.split(" ");
-//        for (String word : words){
-//            Log.d("word", word);
-//            for (int i=0;i<maps.size();i++){
-//                Collection c = maps.get(i).values();
-//
-//                for (Object o : c){
-//                    String s = (String)o;
-//
-//                    String[] newwords = s.split(" ");
-//                    for (String wd : newwords) {
-//                        word = word.toLowerCase();
-//                        wd = wd.toLowerCase();
-//                        wd = wd.replaceAll("[^a-zA-Z0-9]", "");
-//                        if (word.equals(wd)) {
-//                            Log.d("newword", wd);
-//                            Log.d("newwordi", Integer.toString(i));
-//                            if (i == 0) prob1++;
-//                            if (i == 1) prob2++;
-//                            if (i == 2) prob3++;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        String s = "Probability = " + prob1 + "\nName= " + maps.get(0).get("DISPLAY_NAME");
-//        s += "\n by " + maps.get(0).get("BRAND_NAME") + "\n\n";
-//
-//        String s1 = "Probability = " + prob2 + "\nName= " + maps.get(1).get("DISPLAY_NAME");
-//        s1 += "\n by " + maps.get(1).get("BRAND_NAME") + "\n\n";
-//
-//        String s2 = "Probability = " + prob3 + "\nName= " + maps.get(2).get("DISPLAY_NAME");
-//        s2 += "\n by " + maps.get(2).get("BRAND_NAME") + "\n\n";
-//
-//        TextView tv = findViewById(R.id.text_home);
-//        tv.setText(s + s1 + s2);
-//
-//        // Do something with spokenText
-//    }
 }
