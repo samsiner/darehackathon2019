@@ -17,6 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    aaptOptions {
+        noCompress "csv"
+    }
 }
 
 dependencies {
@@ -28,6 +35,11 @@ dependencies {
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'
     implementation 'android.arch.navigation:navigation-ui:1.0.0'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    implementation 'com.opencsv:opencsv:4.6'
+
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
