@@ -32,17 +32,39 @@ public class UltaRepository {
     }
 
     int i = 0;
-    public int getCount(){
+    public int getInventoryCount(){
         try{
-            i = executor.submit(() -> roomDao.getCount()).get();
+            i = executor.submit(() -> roomDao.getInventoryCount()).get();
         } catch (ExecutionException | InterruptedException e){}
         return i;
     }
 
-    public void insert(Product p){
+    int i2 = 0;
+    public int getProductCount(){
+        try{
+            i2 = executor.submit(() -> roomDao.getProductCount()).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return i2;
+    }
+
+    public void insertProduct(Product p){
         Thread thread = new Thread() {
             public void run() {
-                roomDao.insert(p);            }
+                roomDao.insertProduct(p);
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void insertInventory(Inventory p){
+        Thread thread = new Thread() {
+            public void run() {
+                roomDao.insertInventory(p);            }
         };
         thread.start();
         try{
@@ -70,15 +92,11 @@ public class UltaRepository {
         return a2;
     }
 
-    private List<Integer> a3 = new ArrayList<>();
-    public List<Integer> getManProducts() {
-        try{
-            String s = "% man %";
-            String s2 = "% men %";
-            String s3 = "% male %";
-            a3 = executor.submit(() -> roomDao.getManProducts(s, s2, s3)).get();
-        } catch (ExecutionException | InterruptedException e){}
-        return a3;
+    public void setNonManProductsToZero() {
+        String s = "% man %";
+        String s2 = "% men %";
+        String s3 = "% male %";
+        executor.execute(()-> roomDao.setNonManProductsToZero(s, s2, s3));
     }
 
     private List<Integer> a4 = new ArrayList<>();
@@ -122,6 +140,14 @@ public class UltaRepository {
             a8 = executor.submit(() -> roomDao.getProbNonzeroSorted()).get();
         } catch (ExecutionException | InterruptedException e){}
         return a8;
+    }
+
+    private List<Integer> a9 = new ArrayList<>();
+    public List<Integer> getStoresInStock(int sku) {
+        try{
+            a9 = executor.submit(() -> roomDao.getStoresInStock(sku)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a9;
     }
 
     public String[] getInfoBySKU(int sku){

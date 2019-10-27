@@ -1,5 +1,6 @@
 package com.example.ulta3;
 
+import com.example.ulta3.model.Inventory;
 import com.example.ulta3.model.Product;
 
 import android.app.Application;
@@ -25,13 +26,17 @@ public class ViewModel extends AndroidViewModel {
     public void resetProb(){ mRepository.resetProb();}
     public int getProb(int sku){ return mRepository.getProb(sku);}
     public List<Integer> getProbNonzeroSorted(){ return mRepository.getProbNonzeroSorted();}
+    public List<Integer> getStoresInStock(int sku){ return mRepository.getStoresInStock(sku);}
     public double getPriceBySKU(int sku){ return mRepository.getPriceBySKU(sku);}
     public String getNameBySKU(int sku){ return mRepository.getNameBySKU(sku);}
     public String getCategoryBySKU(int sku){ return mRepository.getCategoryBySKU(sku);}
     public String getShortDescBySKU(int sku){ return mRepository.getShortDescBySKU(sku);}
-    public void insert(Product p){ mRepository.insert(p);}
-    public int getCount(){ return mRepository.getCount();}
-    public List<Integer> getManProducts(){ return mRepository.getManProducts();}
+    public void insertProduct(Product p){ mRepository.insertProduct(p);}
+    public void insertInventory(Inventory i){ mRepository.insertInventory(i);}
+
+    public int getInventoryCount(){ return mRepository.getInventoryCount();}
+    public int getProductCount(){ return mRepository.getProductCount();}
+    public void setNonManProductsToZero(){ mRepository.setNonManProductsToZero();}
     public List<Integer> getSearchName(String s){ return mRepository.getSearchName(s);}
     public List<Integer> getSearchCategory(String s){ return mRepository.getSearchCategory(s);}
     public List<Integer> getSearchDesc(String s){ return mRepository.getSearchDesc(s);}

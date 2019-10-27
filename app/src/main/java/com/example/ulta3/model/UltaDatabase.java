@@ -11,7 +11,7 @@ import android.content.Context;
  * @author Southport Developers (Sam Siner & Tyler Arndt)
  */
 
-@Database(entities = {Product.class}, version = 1, exportSchema = false)
+@Database(entities = {Product.class, Inventory.class}, version = 2, exportSchema = false)
 public abstract class UltaDatabase extends RoomDatabase {
     public abstract RoomDao roomDao();
 
@@ -23,6 +23,7 @@ public abstract class UltaDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             UltaDatabase.class, "ulta_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
