@@ -63,15 +63,13 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        Log.d("Api", BuildConfig.API_KEY);
+        buildDatabase();
 
-//        buildDatabase();
-//
-//        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
-//        HashMap<String, String> newmap = new HashMap<>();
-//        for (int i : al){
-//            newmap.put(vm.getNameBySKU(i), "");
-//        }
+        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
+        HashMap<String, String> newmap = new HashMap<>();
+        for (int i : al){
+            newmap.put(vm.getNameBySKU(i), "");
+        }
     }
 
     private static final int SPEECH_REQUEST_CODE = 0;
