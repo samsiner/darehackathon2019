@@ -59,7 +59,6 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     ViewModel vm;
     private FusedLocationProviderClient fusedLocationClient;
-    LocationManager mLocationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +78,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        getClosestStore();
+        getStoreDistance();
         buildDatabase();
+
 
         ArrayList<Integer> al = (ArrayList)vm.getManProducts();
         HashMap<String, String> newmap = new HashMap<>();
@@ -145,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String destinations = "";
+    private ArrayList<Integer> stores = new ArrayList<>();
+    private ArrayList<Integer> distances = new ArrayList<>();
 
-    private void getClosestStore(){
+    private void getStoreDistance(){
         StringBuilder buildURL = new StringBuilder();
         buildURL.append("https://maps.googleapis.com/maps/api/distancematrix/json?origins=");
 
@@ -172,9 +174,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Exception: %s", e.getMessage());
         }
 
-
-//        try{
-            InputStream is = getResources().openRawResource(R.raw.store_details);
+         InputStream is = getResources().openRawResource(R.raw.store_details);
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(is, Charset.forName("UTF-8")));
             String line;
@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     int storeID;
                     try {
                         storeID = Integer.parseInt(tokens[0]);
+                        stores.add(storeID);
                     } catch (NumberFormatException e){
                         continue;
                     }
@@ -245,33 +246,21 @@ public class MainActivity extends AppCompatActivity {
 
         String JSONString = strb.toString();
 
-        Log.d("JSONString", JSONString);
-
-        //Set internet connection status
         if (JSONString.equals("NO INTERNET")) return;
 
         try {
             JSONObject outer = new JSONObject(JSONString);
-            JSONArray destination_addresses = outer.getJSONArray("destination_addresses");
             JSONArray rows = outer.getJSONArray("rows");
             JSONObject elementsObj = rows.getJSONObject(0);
             JSONArray elements = elementsObj.getJSONArray("elements");
 
-            int minDist = 1000000;
-            int minLoc = 0;
             for (int i = 0; i < elements.length(); i++) {
                 JSONObject location = elements.getJSONObject(i);
                 JSONObject distance = location.getJSONObject("distance");
                 int dist = (Integer) distance.get("value");
                 Log.d("LOCATION dist", Integer.toString(dist));
-                if (dist < minDist) {
-                    minDist = dist;
-                    minLoc = i;
-                }
+                distances.add(dist);
             }
-            String loc = (String) destination_addresses.get(minLoc);
-            Log.d("LOCATION CLOSEST", loc);
-
         } catch (JSONException | NullPointerException e) {
             e.printStackTrace();
         }
