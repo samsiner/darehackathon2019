@@ -22,8 +22,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.ulta3.model.Inventory;
 import com.example.ulta3.model.Product;
 import com.example.ulta3.BuildConfig;
+import com.example.ulta3.model.Store;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,6 +61,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     ViewModel vm;
     private FusedLocationProviderClient fusedLocationClient;
+    private ArrayList<Store> stores = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,15 +82,17 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         getStoreDistance();
-        buildDatabase();
-
-
-        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
-        HashMap<String, String> newmap = new HashMap<>();
-        for (int i : al){
-            newmap.put(vm.getNameBySKU(i), "");
+        for (Store s : stores){
+            Log.d("Stores", s.getAddress() + ": " + s.getDistance());
         }
+        buildProducts();
+        buildInventory();
 
+//        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
+//        HashMap<String, String> newmap = new HashMap<>();
+//        for (int i : al){
+//            newmap.put(vm.getNameBySKU(i), "");
+//        }
     }
 
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -99,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-    private void buildDatabase(){
-        if (vm.getCount() > 0) return;
+    private void buildProducts(){
+        if (vm.getProductCount() > 0) return;
 
         InputStream is = getResources().openRawResource(R.raw.product_catalog);
         BufferedReader reader = new BufferedReader(
@@ -137,16 +142,41 @@ public class MainActivity extends AppCompatActivity {
                     longDesc = tokens[9];
                 } catch (NumberFormatException | IndexOutOfBoundsException e) {}
                 Product p = new Product(sku, prodID, name, brand, price, category, shortDesc, longDesc);
-                vm.insert(p);
+                vm.insertProduct(p);
             }
         } catch (IOException e1) {
             e1.printStackTrace();
         }
     }
 
+    private void buildInventory(){
+        if (vm.getInventoryCount() > 0) return;
+
+        InputStream is = getResources().openRawResource(R.raw.store_inventory);
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(is, Charset.forName("UTF-8")));
+        String line;
+
+        try {
+            reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(",");
+
+                int store_ID = Integer.parseInt(tokens[0]);
+                int sku = Integer.parseInt(tokens[1]);
+                int stock = Integer.parseInt(tokens[2]);
+
+                Inventory inventory = new Inventory(store_ID, sku, stock);
+                Log.d("Adding inventory", Integer.toString(store_ID));
+                vm.insertInventory(inventory);
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+
     private String destinations = "";
-    private ArrayList<Integer> stores = new ArrayList<>();
-    private ArrayList<Integer> distances = new ArrayList<>();
 
     private void getStoreDistance(){
         StringBuilder buildURL = new StringBuilder();
@@ -179,17 +209,19 @@ public class MainActivity extends AppCompatActivity {
                     new InputStreamReader(is, Charset.forName("UTF-8")));
             String line;
 
+            int cursor = 0;
             try {
                 reader.readLine();
                 while ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
 
                     if (!tokens[4].equals("Chicago")) continue;
-
+                    Store store;
                     int storeID;
                     try {
                         storeID = Integer.parseInt(tokens[0]);
-                        stores.add(storeID);
+                        store = new Store(storeID);
+                        stores.add(store);
                     } catch (NumberFormatException e){
                         continue;
                     }
@@ -210,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
                     String state = tokens[5];
                     destinations += state + "|";
+
+                    store.setAddress(address + ", " + city + ", " + state);
+                    store.setCursor(cursor);
+                    cursor++;
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -259,7 +295,9 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject distance = location.getJSONObject("distance");
                 int dist = (Integer) distance.get("value");
                 Log.d("LOCATION dist", Integer.toString(dist));
-                distances.add(dist);
+                for (Store s : stores){
+                    if (s.getCursor() == i) s.setDistance(dist);
+                }
             }
         } catch (JSONException | NullPointerException e) {
             e.printStackTrace();
@@ -291,12 +329,21 @@ public class MainActivity extends AppCompatActivity {
                     vm.incrementProbBy(sku, 5);
                 }
                 for (int sku : skusCategory) vm.incrementProbBy(sku, 5);
+                vm.setNonManProductsToZero();
             }
 
             List<Integer> nonzeroSortedSKUs = vm.getProbNonzeroSorted();
 
             for (int i=0; i<nonzeroSortedSKUs.size();i++){
                 Log.d(vm.getCategoryBySKU(nonzeroSortedSKUs.get(i)), vm.getProb(nonzeroSortedSKUs.get(i)) + ": " + vm.getNameBySKU(nonzeroSortedSKUs.get(i)) + ", " + vm.getShortDescBySKU(nonzeroSortedSKUs.get(i)));
+
+                List<Integer> storesInStock = vm.getStoresInStock(nonzeroSortedSKUs.get(i));
+                if (storesInStock.size() == 0) Log.d("Store in stock", "Out of stock near you");
+                for (int storeInStock : storesInStock){
+                    for (Store s : stores){
+                        if (s.getID() == storeInStock) Log.d(Integer.toString(storeInStock), s.getDistance() + " miles away");
+                    }
+                }
                 if (i == 10) break;
             }
 
