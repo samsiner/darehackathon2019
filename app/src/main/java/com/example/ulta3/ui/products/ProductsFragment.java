@@ -24,7 +24,6 @@ public class ProductsFragment extends Fragment {
         if (getArguments() != null) {
             productResults = getArguments().getIntegerArrayList("ProductResults");
         }
-        productResults = new ArrayList<Integer>(Arrays.asList(1131244, 1951000, 2023633));
 //        homeViewModel =
 //                ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_products, container, false);
