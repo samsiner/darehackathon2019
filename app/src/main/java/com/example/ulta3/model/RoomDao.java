@@ -22,14 +22,20 @@ public interface RoomDao {
     @Query("UPDATE product SET prob=0 WHERE sku = :id")
     void resetProb(int id);
 
+    @Query("SELECT COUNT(*) FROM product")
+    int getCount();
+
     @Query("SELECT sku FROM product WHERE prob!=0 ORDER BY prob, price")
-    List<Integer> getProbNonzeroSorted(String category);
+    List<Integer> getProbNonzeroSorted();
 
     @Query("SELECT sku FROM product WHERE category=:category")
     List<Integer> getProductsByCategory(String category);
 
     @Query("SELECT sku FROM product WHERE shortdesc LIKE :str OR longdesc LIKE :str")
-    List<Integer> getProductsByDescgit ription(String str);
+    List<Integer> getProductsByDescription(String str);
+
+    @Query("SELECT sku FROM product WHERE shortdesc LIKE :s OR shortdesc LIKE :s1 OR shortdesc LIKE :s2 OR longdesc LIKE :s OR longdesc LIKE :s1 OR longdesc LIKE :s2")
+    List<Integer> getManProducts(String s, String s1, String s2);
 
     @Query("SELECT name FROM product WHERE sku = :sku")
     String getName(int sku);

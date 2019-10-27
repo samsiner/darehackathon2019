@@ -31,6 +31,14 @@ public class UltaRepository {
         executor = Executors.newFixedThreadPool(4);
     }
 
+    int i = 0;
+    public int getCount(){
+        try{
+            i = executor.submit(() -> roomDao.getCount()).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return i;
+    }
+
     public void insert(Product p){
         Thread thread = new Thread() {
             public void run() {
@@ -61,6 +69,18 @@ public class UltaRepository {
         } catch (ExecutionException | InterruptedException e){}
         return a2;
     }
+
+    private List<Integer> a3 = new ArrayList<>();
+    public List<Integer> getManProducts() {
+        try{
+            String s = "% man %";
+            String s2 = "% men %";
+            String s3 = "% male %";
+            a3 = executor.submit(() -> roomDao.getManProducts(s, s2, s3)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a3;
+    }
+
 
     public String[] getInfoBySKU(int sku){
         String[] info = new String[5];
@@ -97,6 +117,22 @@ public class UltaRepository {
             e.printStackTrace();
         }
         return name;
+    }
+
+    private String desc = "";
+    public String getShortDescBySKU(int sku){
+        Thread thread = new Thread() {
+            public void run() {
+                desc = roomDao.getShortDesc(sku);
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        return desc;
     }
 
     public void incrementProbBy(int id, int i) {

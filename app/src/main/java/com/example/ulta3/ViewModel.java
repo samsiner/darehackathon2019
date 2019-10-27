@@ -25,5 +25,8 @@ public class ViewModel extends AndroidViewModel {
     public void resetProb(int sku){ mRepository.resetProb(sku);}
     public double getPriceBySKU(int sku){ return mRepository.getPriceBySKU(sku);}
     public String getNameBySKU(int sku){ return mRepository.getNameBySKU(sku);}
+    public String getShortDescBySKU(int sku){ return mRepository.getShortDescBySKU(sku);}
     public void insert(Product p){ mRepository.insert(p);}
+    public int getCount(){ return mRepository.getCount();}
+    public List<Integer> getManProducts(){ return mRepository.getManProducts();}
 }

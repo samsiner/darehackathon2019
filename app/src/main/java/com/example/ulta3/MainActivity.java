@@ -67,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
         buildDatabase();
 
         Log.d("2544852 Argan Oil", vm.getNameBySKU(2544852));
+        ArrayList<Integer> al = (ArrayList)vm.getManProducts();
+        HashMap<String, String> newmap = new HashMap<>();
+        for (int i : al){
+            newmap.put(vm.getNameBySKU(i), "");
+            Log.d("Men Products", vm.getNameBySKU(i) + ": " + vm.getShortDescBySKU(i));
+        }
+        Log.d("size", Integer.toString(newmap.keySet().size()));
     }
 
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -79,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buildDatabase(){
+        if (vm.getCount() > 0) return;
+
         InputStream is = getResources().openRawResource(R.raw.product_catalog);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -129,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
+
+
 
 
         }
