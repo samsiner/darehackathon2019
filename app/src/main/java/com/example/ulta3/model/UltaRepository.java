@@ -81,6 +81,48 @@ public class UltaRepository {
         return a3;
     }
 
+    private List<Integer> a4 = new ArrayList<>();
+    public List<Integer> getSearchName(String s) {
+        try{
+            String str = "%" + s + "%";
+            a4 = executor.submit(() -> roomDao.getSearchName(str)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a4;
+    }
+
+    private List<Integer> a5 = new ArrayList<>();
+    public List<Integer> getSearchCategory(String s) {
+        try{
+            a5 = executor.submit(() -> roomDao.getSearchCategory(s)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a5;
+    }
+
+    private List<Integer> a6 = new ArrayList<>();
+    public List<Integer> getSearchDesc(String s) {
+        try{
+            String str = "%" + s + "%";
+            a6 = executor.submit(() -> roomDao.getSearchDesc(str)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a6;
+    }
+
+    private List<Integer> a7 = new ArrayList<>();
+    public List<Integer> getSearchBrand(String s) {
+        try{
+            String str = "%" + s + "%";
+            a7 = executor.submit(() -> roomDao.getSearchBrand(str)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a7;
+    }
+
+    private List<Integer> a8 = new ArrayList<>();
+    public List<Integer> getProbNonzeroSorted() {
+        try{
+            a8 = executor.submit(() -> roomDao.getProbNonzeroSorted()).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return a8;
+    }
 
     public String[] getInfoBySKU(int sku){
         String[] info = new String[5];
@@ -103,6 +145,14 @@ public class UltaRepository {
         return price;
     }
 
+    private int prob = 0;
+    public int getProb(int sku){
+        try{
+            prob = executor.submit(() -> roomDao.getProb(sku)).get();
+        } catch (ExecutionException | InterruptedException e){}
+        return prob;
+    }
+
     private String name = "";
     public String getNameBySKU(int sku){
         Thread thread = new Thread() {
@@ -117,6 +167,22 @@ public class UltaRepository {
             e.printStackTrace();
         }
         return name;
+    }
+
+    private String category = "";
+    public String getCategoryBySKU(int sku){
+        Thread thread = new Thread() {
+            public void run() {
+                category = roomDao.getCategory(sku);
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        return category;
     }
 
     private String desc = "";
@@ -136,10 +202,31 @@ public class UltaRepository {
     }
 
     public void incrementProbBy(int id, int i) {
-        executor.execute(() -> roomDao.incrementProb(id, i));
+
+        Thread thread = new Thread() {
+            public void run() {
+                roomDao.incrementProb(id, i);
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
-    public void resetProb(int id) {
-        executor.execute(() -> roomDao.resetProb(id));
+    public void resetProb() {
+        Thread thread = new Thread() {
+            public void run() {
+                roomDao.resetProb();
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 }

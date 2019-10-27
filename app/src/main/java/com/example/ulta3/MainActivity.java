@@ -37,8 +37,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,14 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         buildDatabase();
 
-        Log.d("2544852 Argan Oil", vm.getNameBySKU(2544852));
         ArrayList<Integer> al = (ArrayList)vm.getManProducts();
         HashMap<String, String> newmap = new HashMap<>();
         for (int i : al){
             newmap.put(vm.getNameBySKU(i), "");
-            Log.d("Men Products", vm.getNameBySKU(i) + ": " + vm.getShortDescBySKU(i));
         }
-        Log.d("size", Integer.toString(newmap.keySet().size()));
     }
 
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -124,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (NumberFormatException | IndexOutOfBoundsException e) {}
                 Product p = new Product(sku, prodID, name, brand, price, category, shortDesc, longDesc);
                 vm.insert(p);
-                Log.d("MainActivity", "Just Created " + p.sku + " " + p.name);
             }
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -138,9 +136,32 @@ public class MainActivity extends AppCompatActivity {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
+            String[] textarr = spokenText.split(" ");
 
+            vm.resetProb();
 
+            for (String s : textarr){
+                Log.d("String", s);
+                if (s.length() < 3) continue;
+                List<Integer> skusName = vm.getSearchName(s);
+                List<Integer> skusCategory = vm.getSearchCategory(s);
+                List<Integer> skusDesc = vm.getSearchDesc(s);
+                List<Integer> skusBrand = vm.getSearchBrand(s);
 
+                for (int sku : skusDesc) vm.incrementProbBy(sku, 1);
+                for (int sku : skusName) vm.incrementProbBy(sku, 3);
+                for (int sku : skusBrand){
+                    vm.incrementProbBy(sku, 5);
+                }
+                for (int sku : skusCategory) vm.incrementProbBy(sku, 5);
+            }
+
+            List<Integer> nonzeroSortedSKUs = vm.getProbNonzeroSorted();
+
+            for (int i=0; i<nonzeroSortedSKUs.size();i++){
+                Log.d(vm.getCategoryBySKU(nonzeroSortedSKUs.get(i)), vm.getProb(nonzeroSortedSKUs.get(i)) + ": " + vm.getNameBySKU(nonzeroSortedSKUs.get(i)) + ", " + vm.getShortDescBySKU(nonzeroSortedSKUs.get(i)));
+                if (i == 10) break;
+            }
 
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -150,36 +171,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-//
-//
-//    private void createHashMaps(){
-//        HashMap<String, String> p1 = new HashMap<>();
-//        HashMap<String, String> p2 = new HashMap<>();
-//        HashMap<String, String> p3 = new HashMap<>();
-//
-//        p1.put("SKU_ID", "2021212");
-//        p1.put("DISPLAY_NAME", "Fahrenheit Eau de Toilette");
-//        p1.put("BRAND_NAME", "Dior");
-//        p1.put("CATEGORY", "Cologne");
-//        p1.put("DESCRIPTION", "Dior Fahrenheit Eau de Toilette is a sensual and masculine leather woods fragrance. A unique and contrasting signature");
-//
-//        p2.put("SKU_ID", "2021224");
-//        p2.put("DISPLAY_NAME", "Obsession For Men Eau de Toilette");
-//        p2.put("BRAND_NAME", "Calvin Klein");
-//        p2.put("CATEGORY", "Cologne");
-//        p2.put("DESCRIPTION", "Obsession For Men Eau de Toilette by Calvin Klein. Intense. Unforgettable. Provocative. Between love and madness lies Obsession. This spicy oriental is a provocative and compelling blend of herbs and rare woods.");
-//
-//        p3.put("SKU_ID", "2049501");
-//        p3.put("DISPLAY_NAME", "Chrome Eau de Toilette");
-//        p3.put("BRAND_NAME", "Azzaro");
-//        p3.put("CATEGORY", "Cologne");
-//        p3.put("DESCRIPTION", "Experience the polished citrus essences of Azzaro's Chrome Eau de Toilette.");
-//
-//        maps.add(p1);
-//        maps.add(p2);
-//        maps.add(p3);
-//    }
 //
 //    private void doTextStuff(String spokenText){
 //        prob1 = 0;
