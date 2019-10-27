@@ -43,6 +43,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         buildURL.append("&destinations=");
                         buildURL.append(destinations + "&key=");
                         Log.d("LAT", buildURL.toString());
-
+                        parseJSON(buildURL.toString());
                     }
                 }
             });
@@ -214,89 +215,66 @@ public class MainActivity extends AppCompatActivity {
             }
 
             destinations = destinations.substring(0, destinations.length()-1);
-//            URL urlStations = new URL(buildURL.toString());
-//
-//            Thread thread = new Thread() {
-//                public void run() {
-//                    try {
-//                        Scanner scan = new Scanner(urlStations.openStream());
-//                        while (scan.hasNext()) sb.append(scan.nextLine());
-//                        scan.close();
-//                    } catch (IOException e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//            };
-//            thread.start();
-//            try{
-//                thread.join();
-//            } catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//
-//        } catch (IOException e) {
-//            sb.delete(0, sb.length());
-//            sb.append("NO INTERNET");
-//        }
-//        String JSONString = sb.toString();
-//
-//        Log.d("JSONString", JSONString);
+    }
 
-//        //Set internet connection status
-//        connectionStatusLD.postValue(!JSONString.equals("NO INTERNET"));
-//        if (JSONString.equals("NO INTERNET")) return;
-//
-//        ArrayList<String> currentAlerts = new ArrayList<>(); //For multiple alerts
-//        ArrayList<String> beforeStationsOut = new ArrayList<>(mStationDao.getAllAlertStationIDs());
-//
-//        try {
-//            JSONObject outer = new JSONObject(JSONString);
-//            JSONObject inner = outer.getJSONObject("CTAAlerts");
-//            JSONArray arrAlerts = inner.getJSONArray("Alert");
-//
-//            for (int i=0;i<arrAlerts.length();i++){
-//                JSONObject alert = (JSONObject) arrAlerts.get(i);
-//                String impact = alert.getString("Impact");
-//                if (!impact.equals("Elevator Status")) continue;
-//
-//                JSONArray service;
-//                try {
-//                    JSONObject impactedService = alert.getJSONObject("ImpactedService");
-//                    service = impactedService.getJSONArray("Service");
-//                } catch (JSONException e){
-//                    e.printStackTrace();
-//                    continue;
-//                }
-//
-//                for (int j=0;j<service.length();j++) {
-//                    JSONObject serviceInstance = (JSONObject) service.get(j);
-//                    if (serviceInstance.getString("ServiceType").equals("T")) {
-//                        String id = serviceInstance.getString("ServiceId");
-//                        String headline = alert.getString("Headline");
-//
-//                        if (headline.contains("Back in Service")) break;
-//
-//                        //End up with beforeStationsOut only containing alerts that no longer exist
-//                        beforeStationsOut.remove(id);
-//
-//                        //Looking for multiple alerts for the same station.
-//                        String shortDesc = alert.getString("ShortDescription");
-//                        if (currentAlerts.contains(id)) {
-//                            shortDesc += "\n\n";
-//                            shortDesc += mStationDao.getShortDescription(id);
-//                        } else {
-//                            currentAlerts.add(id);
-//                        }
-//
-//                        mStationDao.setAlert(id, shortDesc);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//        catch (JSONException | NullPointerException e) {
-//            e.printStackTrace();
-//        }
+    private void parseJSON(String url){
+        StringBuilder strb = new StringBuilder();
+
+        URL urlURL;
+        try{
+            urlURL = new URL(url);
+        } catch (MalformedURLException e){return;}
+
+        Thread thread = new Thread() {
+            public void run() {
+                try {
+                    Scanner scan = new Scanner(urlURL.openStream());
+                    while (scan.hasNext()) strb.append(scan.nextLine());
+                    scan.close();
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
+        try{
+            thread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+        String JSONString = strb.toString();
+
+        Log.d("JSONString", JSONString);
+
+        //Set internet connection status
+        if (JSONString.equals("NO INTERNET")) return;
+
+        try {
+            JSONObject outer = new JSONObject(JSONString);
+            JSONArray destination_addresses = outer.getJSONArray("destination_addresses");
+            JSONArray rows = outer.getJSONArray("rows");
+            JSONObject elementsObj = rows.getJSONObject(0);
+            JSONArray elements = elementsObj.getJSONArray("elements");
+
+            int minDist = 1000000;
+            int minLoc = 0;
+            for (int i = 0; i < elements.length(); i++) {
+                JSONObject location = elements.getJSONObject(i);
+                JSONObject distance = location.getJSONObject("distance");
+                int dist = (Integer) distance.get("value");
+                Log.d("LOCATION dist", Integer.toString(dist));
+                if (dist < minDist) {
+                    minDist = dist;
+                    minLoc = i;
+                }
+            }
+            String loc = (String) destination_addresses.get(minLoc);
+            Log.d("LOCATION CLOSEST", loc);
+
+        } catch (JSONException | NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
